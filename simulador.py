@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 """
 Simulador de Redes de Filas (eventos discretos) - T1 Simulacao e Metodos Analiticos
 Uso:  python3 simulador.py modelo.yml
@@ -12,7 +12,6 @@ import yaml
 class FimDosAleatorios(Exception):
     """Lancada quando se pede um aleatorio alem do limite: encerra a simulacao."""
 
-# ---------------------------------------------------------------- Gerador (LCG)
 class GeradorLCG:
     """Metodo Congruente Linear: X(i+1) = (a*X(i) + c) mod M ; retorna X/M em [0,1)."""
     A, C, M = 1664525, 1013904223, 2**32
@@ -44,18 +43,17 @@ class GeradorLista:
         self.restantes -= 1; self.usados += 1
         return r
 
-# ---------------------------------------------------------------- Entidades
 class Fila:
     def __init__(self, nome, servidores, capacidade, min_cheg, max_cheg, min_at, max_at):
         self.nome = nome
         self.servidores = servidores
-        self.capacidade = capacidade          # None = infinita
+        self.capacidade = capacidade          
         self.min_cheg, self.max_cheg = min_cheg, max_cheg
         self.min_at, self.max_at = min_at, max_at
-        self.status = 0                       # clientes no sistema da fila
+        self.status = 0                     
         self.perdas = 0
-        self.tempos = [0.0]                   # tempo acumulado por estado
-        self.rotas = []                       # [(destino ou None=exterior, prob)]
+        self.tempos = [0.0]                   
+        self.rotas = []                      
 
     def cabe(self):
         return self.capacidade is None or self.status < self.capacidade
@@ -75,7 +73,7 @@ class Evento:
 
     def __init__(self, tipo, tempo, origem, destino=None):
         self.tipo, self.tempo, self.origem, self.destino = tipo, tempo, origem, destino
-        Evento._seq += 1; self.seq = Evento._seq   # desempate estavel (FIFO)
+        Evento._seq += 1; self.seq = Evento._seq   
 
     def __lt__(self, outro):
         return (self.tempo, self.seq) < (outro.tempo, outro.seq)
@@ -87,17 +85,17 @@ class Escalonador:
     def proximo(self): return heapq.heappop(self.heap)
     def vazio(self): return not self.heap
 
-# ---------------------------------------------------------------- Simulador
+
 class Simulador:
     def __init__(self, filas, chegadas_iniciais, rnd):
-        self.filas = filas                    # dict nome -> Fila (ordem do .yml)
+        self.filas = filas                   
         self.rnd = rnd
         self.esc = Escalonador()
         self.tempo = 0.0
         for nome, t in chegadas_iniciais.items():
             self.esc.agenda(Evento(Evento.CHEGADA, t, filas[nome]))
 
-    # ---- utilitarios
+ 
     def uniforme(self, a, b):
         return a + (b - a) * self.rnd.next_random()
 
@@ -109,7 +107,7 @@ class Simulador:
 
     def roteia(self, fila):
         """Sorteia o destino do cliente atendido (None = exterior), probabilidades acumuladas."""
-        if len(fila.rotas) == 1:              # rota unica: nao precisa sortear
+        if len(fila.rotas) == 1:             
             return fila.rotas[0][0]
         r = self.rnd.next_random()
         acum = 0.0
@@ -127,7 +125,7 @@ class Simulador:
         else:
             self.esc.agenda(Evento(Evento.PASSAGEM, t, fila, destino))
 
-    # ---- tratamento dos eventos
+   
     def entra_na_fila(self, fila):
         if fila.cabe():
             fila.entra()
@@ -160,8 +158,6 @@ class Simulador:
     def executa(self):
         trata = {Evento.CHEGADA: self.chegada, Evento.SAIDA: self.saida,
                  Evento.PASSAGEM: self.passagem}
-        # Encerra quando o ultimo aleatorio disponivel ja foi usado (ex.: o 100.000o).
-        # O tempo global e o instante do ultimo evento tratado.
         try:
             while self.rnd.restantes > 0 and not self.esc.vazio():
                 ev = self.esc.proximo()
@@ -169,10 +165,10 @@ class Simulador:
         except FimDosAleatorios:
             pass
 
-# ---------------------------------------------------------------- Leitura do .yml
+
 def carrega_modelo(caminho):
     with open(caminho, encoding="utf-8") as fh:
-        texto = fh.read().replace("!PARAMETERS", "")   # tag do simulador do modulo 3
+        texto = fh.read().replace("!PARAMETERS", "")  
     cfg = yaml.safe_load(texto)
 
     filas = {}
@@ -188,11 +184,10 @@ def carrega_modelo(caminho):
         if soma > 1 + 1e-9:
             sys.exit(f"Erro: probabilidades de roteamento de {f.nome} somam {soma} > 1")
         if soma < 1 - 1e-9:
-            f.rotas.append((None, 1 - soma))   # restante vai para o exterior
+            f.rotas.append((None, 1 - soma))   
 
     return cfg, filas
 
-# ---------------------------------------------------------------- Relatorio
 def relatorio(sim, cfg, semente):
     T = sim.tempo
     print("=" * 66)
@@ -224,7 +219,7 @@ def main():
         n = int(cfg.get("rndnumbersPerSeed", 100000))
         execucoes = [(s, (lambda s=s: GeradorLCG(s, n))) for s in cfg.get("seeds", [1])]
     for semente, cria_gerador in execucoes:
-        _, filas = carrega_modelo(sys.argv[1])      # filas zeradas a cada semente
+        _, filas = carrega_modelo(sys.argv[1])     
         sim = Simulador(filas, cfg["arrivals"], cria_gerador())
         sim.executa()
         relatorio(sim, cfg, semente)
