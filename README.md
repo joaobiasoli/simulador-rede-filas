@@ -7,7 +7,8 @@ simulador disponibilizado no módulo 3.
 
 ## Requisitos
 - Python 3.8+
-- PyYAML: `pip install pyyaml`
+- PyYAML: `python3 -m pip install pyyaml`
+  (no Windows, use `python` no lugar de `python3` em todos os comandos)
 
 ## Como executar
 ```bash
