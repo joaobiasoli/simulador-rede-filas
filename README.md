@@ -11,7 +11,7 @@ simulador disponibilizado no módulo 3.
 
 ## Como executar
 ```bash
-python3 simulador.py exemplos/modelo_t1.yml
+python3 simulador.py modelo_t1.yml
 ```
 
 ## Formato do arquivo de entrada (.yml)
@@ -67,7 +67,7 @@ aleatórios em `rndnumbers:` (útil para conferir a simulação à mão).
 - **Saída:** para cada fila, o tempo acumulado e a probabilidade de cada
   estado, e o número de perdas. Ao final, o tempo global da simulação.
 
-## Exemplos em `exemplos/`
+## Arquivos de exemplo
 | Arquivo | Modelo |
 |---|---|
 | `modelo_t1.yml` | Rede de 3 filas do T1 (resultado em `resultado_t1.txt`) |
