@@ -1,0 +1,22 @@
+!PARAMETERS
+arrivals:
+   Q1: 2.0
+queues:
+   Q1:
+      servers: 1
+      capacity: 3
+      minArrival: 1.0
+      maxArrival: 4.0
+      minService: 1.0
+      maxService: 1.5
+rndnumbers:
+- 0.9921
+- 0.0004
+- 0.5534
+- 0.2761
+- 0.3398
+- 0.8963
+- 0.9023
+- 0.0132
+- 0.4569
+- 0.5121

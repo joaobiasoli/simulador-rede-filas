@@ -1,0 +1,14 @@
+!PARAMETERS
+arrivals:
+   Q1: 3.0
+queues:
+   Q1:
+      servers: 2
+      capacity: 5
+      minArrival: 3.0
+      maxArrival: 5.0
+      minService: 4.0
+      maxService: 5.0
+rndnumbersPerSeed: 100000
+seeds:
+- 1
